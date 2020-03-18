@@ -138,7 +138,7 @@ class Common(Configuration):
     DATABASES = values.DatabaseURLValue()
 
     # Cache
-    CACHES = values.CacheURLValue()
+    CACHES = values.CacheURLValue(default='locmem://')
 
 
 class Dev(Common):
