@@ -143,3 +143,7 @@ class Common(Configuration):
 
 class Dev(Common):
     DEBUG = True
+
+
+class Test(Common):
+    pass

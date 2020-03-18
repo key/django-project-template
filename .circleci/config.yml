@@ -87,7 +87,7 @@ jobs:
           command: |
             cd dist
             pipenv install -d --keep-outdated
-            pipenv run coverage run --source="." manage.py test --configuration=Test
+            pipenv run coverage run --source="." --omit=".venv/*" manage.py test --configuration=Test -v 2
             if [ ! -z "${CI}" -a ! -z "${CODECOV_TOKEN}" ]; then pipenv run codecov -t ${CODECOV_TOKEN} || exit 1; fi
 
 workflows:
