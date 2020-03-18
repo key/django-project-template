@@ -51,11 +51,17 @@ jobs:
           paths:
             - ~/.local/share/virtualenv/
             - .venv
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .
   test:
     <<: *defaults
     environment:
       DATABASE_URL: postgresql://postgres:password@127.0.0.1:5432/django_test
     steps:
+      - attach_workspace:
+          at: ~/project
       - checkout
       - restore_cache:
           keys:
