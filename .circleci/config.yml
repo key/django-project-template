@@ -33,6 +33,10 @@ jobs:
           keys:
             - pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
+          name: Install apt packages
+          command: |
+            sudo apt-get install --fix-missing -y libev-dev
+      - run:
           name: Install dependencies
           command: |
             pipenv install -d --keep-outdated
