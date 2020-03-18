@@ -39,17 +39,18 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            mkdir dist
             pipenv install -d --keep-outdated
             pipenv run django-admin startproject \
               --template=. \
               --name=env.example \
               --extension=py,md \
-              django_project_template ~/dist
+              django_project_template dist
       - save_cache:
           key: pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
             - ~/.local/share/virtualenv/
-            - ~/dist/.venv
+            - .venv
   test:
     <<: *defaults
     environment:
@@ -74,6 +75,7 @@ jobs:
       - run:
           name: Test
           command: |
+            cd dist
             pipenv run coverage run --source="." manage.py test --configuration=Test
             if [ ! -z "${CI}" -a ! -z "${CODECOV_TOKEN}" ]; then pipenv run codecov -t ${CODECOV_TOKEN} || exit 1; fi
 
