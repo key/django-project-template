@@ -79,9 +79,14 @@ jobs:
             done
             echo Failed waiting for Postgres && exit 1
       - run:
+          name: Install apt packages
+          command: |
+            sudo apt-get install --fix-missing -y libev-dev
+      - run:
           name: Test
           command: |
             cd dist
+            pipenv install -d --keep-outdated
             pipenv run coverage run --source="." manage.py test --configuration=Test
             if [ ! -z "${CI}" -a ! -z "${CODECOV_TOKEN}" ]; then pipenv run codecov -t ${CODECOV_TOKEN} || exit 1; fi
 
