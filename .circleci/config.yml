@@ -50,7 +50,7 @@ jobs:
           key: pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
             - ~/.local/share/virtualenv/
-            - .venv
+            - ~/project/dist/.venv
       - persist_to_workspace:
           root: ~/project
           paths:
