@@ -17,7 +17,7 @@ This is a simple Django 3.0+ project template with my preferred setup. Most Djan
 $ django-admin.py startproject \
   --template=https://github.com/key/django-project-template/archive/master.zip \
   --name=env.example \
-  --extension=py,md \
+  --extension=py,md,yml \
   project_name
 $ mv example.env .env
 $ LDFLAGS=-L/usr/local/lib CFLAGS=-I/usr/local/include pipenv install --dev
