@@ -8,6 +8,7 @@ from typing import Optional
 import sentry_sdk
 from configurations import Configuration, values
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
 
 
 class Common(Configuration):
@@ -131,7 +132,7 @@ class Common(Configuration):
     if SENTRY_DSN:
         sentry_sdk.init(
             dsn=SENTRY_DSN,
-            integrations=[DjangoIntegration()],
+            integrations=[DjangoIntegration(), RedisIntegration()],
         )
 
     # Database
