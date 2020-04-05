@@ -34,6 +34,8 @@ class Common(Configuration):
         'django.contrib.messages',
         'django.contrib.staticfiles',
 
+        'django_extensions',
+
         'apps.core',
     ]
 
