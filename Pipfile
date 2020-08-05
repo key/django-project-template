@@ -20,7 +20,7 @@ django = "==3.1"
 django-redis = "==4.12.1"
 django-configurations = {extras = ["database","cache"],version = "==2.2"}
 django-extensions = "==3.0.4"
-djangorestframework = "==3.11.0"
+djangorestframework = "==3.11.1"
 djangorestframework-camel-case = "==1.2.0"
 hiredis = "==1.0.1"
 psycopg2-binary = "==2.8.5"
