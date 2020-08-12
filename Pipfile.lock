@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "50d2425cc3af7dee93cfc82eab3d7044fd1b994ffe8800e8cb9f11cf6d20fc01"
+            "sha256": "d2a3ee3fd3f1182c723ce45520f44630336118d182de069b176daf1d2e07697c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -338,11 +338,10 @@
         },
         "factory-boy": {
             "hashes": [
-                "sha256:728df59b372c9588b83153facf26d3d28947fc750e8e3c95cefa9bed0e6394ee",
-                "sha256:faf48d608a1735f0d0a3c9cbf536d64f9132b547dae7ba452c4d99a79e84a370"
+                "sha256:fe0f512a73ed5be36fd190253375f39705c6104c0dd99f14ac21b01b7671cc5b"
             ],
             "index": "pypi",
-            "version": "==2.12.0"
+            "version": "==3.0.0"
         },
         "faker": {
             "hashes": [
@@ -404,10 +403,10 @@
         },
         "prompt-toolkit": {
             "hashes": [
-                "sha256:563d1a4140b63ff9dd587bda9557cffb2fe73650205ab6f4383092fb882e7dc8",
-                "sha256:df7e9e63aea609b1da3a65641ceaf5bc7d05e0a04de5bd45d05dbeffbabf9e04"
+                "sha256:683397077a64cd1f750b71c05afcfc6612a7300cb6932666531e5a54f38ea564",
+                "sha256:7630ab85a23302839a0f26b31cc24f518e6155dea1ed395ea61b42c45941b6a6"
             ],
-            "version": "==3.0.5"
+            "version": "==3.0.6"
         },
         "ptyprocess": {
             "hashes": [
