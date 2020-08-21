@@ -10,7 +10,7 @@ name = "pypi"
 Werkzeug = "==1.0.1"
 ipython = "==7.17.0"
 factory-boy = "==3.0.1"
-codecov = "==2.1.8"
+codecov = "==2.1.9"
 coverage = "==5.2.1"
 django-debug-toolbar = "==2.2"
 
