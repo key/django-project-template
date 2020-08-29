@@ -8,7 +8,7 @@ name = "pypi"
 
 [dev-packages]
 Werkzeug = "==1.0.1"
-ipython = "==7.18.0"
+ipython = "==7.18.1"
 factory-boy = "==3.0.1"
 codecov = "==2.1.9"
 coverage = "==5.2.1"
