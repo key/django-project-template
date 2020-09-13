@@ -11,7 +11,7 @@ Werkzeug = "==1.0.1"
 ipython = "==7.18.1"
 factory-boy = "==3.0.1"
 codecov = "==2.1.9"
-coverage = "==5.2.1"
+coverage = "==5.3"
 django-debug-toolbar = "==2.2"
 
 [packages]
