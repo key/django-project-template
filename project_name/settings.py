@@ -36,6 +36,7 @@ class Common(Configuration):
         'django.contrib.staticfiles',
 
         'django_extensions',
+        'rest_framework',
 
         'apps.core',
     ]
@@ -48,6 +49,7 @@ class Common(Configuration):
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'whitenoise.middleware.WhiteNoiseMiddleware',
     ]
 
     ROOT_URLCONF = '{{ project_name }}.urls'
@@ -126,6 +128,7 @@ class Common(Configuration):
             'rest_framework.parsers.JSONParser',
         ),
         'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+        'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
         'PAGE_SIZE': 100,
     }
 
