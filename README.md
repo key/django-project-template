@@ -13,14 +13,33 @@ This is a simple Django 3.0+ project template with my preferred setup. Most Djan
 
 ## How to install
 
+Install requirements.
+
 ```bash
-$ django-admin.py startproject \
+brew bundle
+```
+
+Create django project from template.
+
+```bash
+django-admin.py startproject \
   --template=https://github.com/key/django-project-template/archive/master.zip \
   --name=env.example \
   --extension=py,md,yml \
   project_name
-$ mv example.env .env
-$ LDFLAGS=-L/usr/local/lib CFLAGS=-I/usr/local/include pipenv install --dev
+```
+
+Create `env` from `env.example`, and allow direnv.
+
+```bash
+mv env.example env
+direnv allow .
+```
+
+Install python modules.
+
+```bash
+C_INCLUDE_PATH=/usr/local/include LD_LIBARY_PATH=/usr/local/lib pipenv install --dev
 ```
 
 ## Environment variables
