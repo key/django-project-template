@@ -40,6 +40,7 @@ jobs:
           name: Install dependencies
           command: |
             mkdir dist
+            curl https://pyenv.run | bash
             pipenv install -d --keep-outdated
             pipenv run django-admin startproject \
               --template=. \

@@ -3,8 +3,8 @@ url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-# [requires]
-# python_version = "3.8.1"
+[requires]
+python_version = "3.8.9"
 
 [dev-packages]
 Werkzeug = "==1.0.1"
@@ -16,7 +16,7 @@ django-debug-toolbar = "==3.2.1"
 
 [packages]
 bjoern = "==3.1.0"
-django = "==3.1.8"
+django = "==3.2.2"
 django-redis = "==4.12.1"
 django-configurations = {extras = ["database","cache"],version = "==2.2"}
 django-extensions = "==3.1.3"
