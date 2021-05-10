@@ -6,9 +6,3 @@ updates:
     interval: daily
     time: "20:00"
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: sentry-sdk
-    versions:
-    - 0.20.0
-    - 0.20.1
-    - 0.20.2
