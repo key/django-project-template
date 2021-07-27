@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [requires]
-python_version = "3.8.9"
+python_version = "3.8"
 
 [dev-packages]
 Werkzeug = "==2.0.1"
