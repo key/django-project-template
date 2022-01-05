@@ -8,7 +8,7 @@ python_version = "3.8"
 
 [dev-packages]
 Werkzeug = "==2.0.2"
-ipython = "==7.30.1"
+ipython = "==7.31.0"
 factory-boy = "==3.2.1"
 codecov = "==2.1.12"
 coverage = "==6.2"
