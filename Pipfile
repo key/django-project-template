@@ -7,7 +7,7 @@ name = "pypi"
 python_version = "3.8"
 
 [dev-packages]
-Werkzeug = "==2.0.2"
+Werkzeug = "==2.0.3"
 ipython = "==8.0.0"
 factory-boy = "==3.2.1"
 codecov = "==2.1.12"
