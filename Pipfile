@@ -12,7 +12,7 @@ ipython = "==8.2.0"
 factory-boy = "==3.2.1"
 codecov = "==2.1.12"
 coverage = "==6.4.2"
-django-debug-toolbar = "==3.2.4"
+django-debug-toolbar = "==3.5.0"
 
 [packages]
 bjoern = "==3.2.1"
