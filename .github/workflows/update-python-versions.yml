@@ -146,10 +146,13 @@ jobs:
               with open('python_updates.json', 'w') as f:
                   json.dump(all_updates, f)
               
-              print("\n::set-output name=updates_needed::true")
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write("updates_needed=true\n")
+              print("\nUpdates needed, setting output variable.")
           else:
-              print("No updates needed.")
-              print("\n::set-output name=updates_needed::false")
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write("updates_needed=false\n")
+              print("\nNo updates needed, setting output variable.")
           EOF
 
           # Install additional dependency
