@@ -12,16 +12,16 @@ jobs:
     
     env:
       PIPENV_VENV_IN_PROJECT: true
-      DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+      DJANGO_SECRET_KEY: django_secret
       ENVIRONMENT: Test
-      DATABASE_URL: postgresql://postgres:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/django_test
+      DATABASE_URL: postgresql://postgres:password@127.0.0.1:5432/django_test
       
     services:
       postgres:
-        image: postgres:10
+        image: postgres:latest
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_PASSWORD: password
           POSTGRES_DB: django_test
         ports:
           - 5432:5432
