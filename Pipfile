@@ -10,7 +10,7 @@ python_version = "3.8"
 Werkzeug = "==2.2.2"
 ipython = "==8.9.0"
 factory-boy = "==3.2.1"
-codecov = "==2.1.12"
+codecov = "==2.1.13"
 coverage = "==7.1.0"
 django-debug-toolbar = "==3.8.1"
 
