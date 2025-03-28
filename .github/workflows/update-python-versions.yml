@@ -1,0 +1,346 @@
+name: Update Python Runtime Versions
+
+on:
+  schedule:
+    - cron: '0 0 15 * *'  # Run monthly on the 15th day
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  check-python-versions:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyGithub pyyaml
+
+      - name: Check for Python version updates
+        id: check-updates
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+        run: |
+          cat > check_python_versions.py << 'EOF'
+          import os
+          import re
+          import json
+          import subprocess
+          from pathlib import Path
+          import requests
+
+          def get_latest_python_version():
+              """Get the latest stable Python version."""
+              try:
+                  # Get Python versions from Python.org
+                  response = requests.get('https://www.python.org/api/v2/downloads/release/?is_published=true')
+                  data = response.json()
+                  
+                  # Filter for stable releases (3.x.y)
+                  stable_versions = []
+                  for release in data['releases']:
+                      version = release['version']
+                      if re.match(r'^3\.\d+\.\d+$', version):
+                          stable_versions.append(version)
+                  
+                  # Sort versions and get the latest
+                  from packaging import version
+                  latest = sorted(stable_versions, key=lambda v: version.parse(v), reverse=True)[0]
+                  
+                  # Return major.minor format (3.x)
+                  return '.'.join(latest.split('.')[:2])
+              except Exception as e:
+                  print(f"Error getting latest Python version: {e}")
+                  # Fallback to a known recent version
+                  return "3.12"
+
+          def check_pipfile():
+              """Check Pipfile for Python version that needs updating."""
+              pipfile_path = Path('Pipfile')
+              
+              if not pipfile_path.exists():
+                  print("No Pipfile found.")
+                  return None
+                  
+              current_version = None
+              with open(pipfile_path, 'r') as f:
+                  for line in f:
+                      if 'python_version' in line:
+                          match = re.search(r'python_version\s*=\s*["\']([^"\']+)["\']', line)
+                          if match:
+                              current_version = match.group(1)
+                              break
+              
+              if not current_version:
+                  print("No Python version found in Pipfile.")
+                  return None
+                  
+              latest_version = get_latest_python_version()
+              
+              if latest_version != current_version:
+                  return {
+                      'file': 'Pipfile',
+                      'current_version': current_version,
+                      'latest_version': latest_version
+                  }
+                  
+              return None
+
+          def check_workflow_files():
+              """Check workflow files for Python version that needs updating."""
+              updates_needed = []
+              workflows_dir = Path('.github/workflows')
+              
+              if not workflows_dir.exists():
+                  print("No workflows directory found.")
+                  return updates_needed
+                  
+              latest_version = get_latest_python_version()
+              
+              for workflow_file in workflows_dir.glob('*.yml'):
+                  with open(workflow_file, 'r') as f:
+                      content = f.read()
+                      
+                  # Find Python version specifications
+                  # Look for python-version: '3.x' or python-version: "3.x"
+                  matches = re.findall(r'python-version:\s*[\'"]([0-9]+\.[0-9]+)[\'"]', content)
+                  
+                  for match in matches:
+                      if match != latest_version:
+                          updates_needed.append({
+                              'file': str(workflow_file),
+                              'current_version': match,
+                              'latest_version': latest_version
+                          })
+                          break  # Only report once per file
+              
+              return updates_needed
+
+          # Main execution
+          pipfile_update = check_pipfile()
+          workflow_updates = check_workflow_files()
+          
+          # Combine results
+          all_updates = []
+          if pipfile_update:
+              all_updates.append(pipfile_update)
+          all_updates.extend(workflow_updates)
+          
+          if all_updates:
+              print("Updates needed:")
+              for update in all_updates:
+                  print(f"{update['file']}: {update['current_version']} -> {update['latest_version']}")
+              
+              # Save updates to file for next step
+              with open('python_updates.json', 'w') as f:
+                  json.dump(all_updates, f)
+              
+              print("\n::set-output name=updates_needed::true")
+          else:
+              print("No updates needed.")
+              print("\n::set-output name=updates_needed::false")
+          EOF
+
+          # Install additional dependency
+          pip install packaging
+
+          # Run the check script
+          python check_python_versions.py
+
+      - name: Create PR for updates
+        if: steps.check-updates.outputs.updates_needed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+        run: |
+          # Create a new branch
+          BRANCH_NAME="github-actions/$(date +%s)-update-python-versions"
+          git checkout -b $BRANCH_NAME
+
+          cat > update_python_versions.py << 'EOF'
+          import os
+          import re
+          import json
+          import subprocess
+          from pathlib import Path
+
+          def update_pipfile(update):
+              """Update Python version in Pipfile."""
+              file_path = 'Pipfile'
+              current_version = update['current_version']
+              latest_version = update['latest_version']
+              
+              with open(file_path, 'r') as f:
+                  content = f.read()
+                  
+              # Replace the version in the file
+              updated_content = re.sub(
+                  r'(python_version\s*=\s*["\'])' + re.escape(current_version) + r'(["\'])',
+                  r'\g<1>' + latest_version + r'\g<2>',
+                  content
+              )
+              
+              with open(file_path, 'w') as f:
+                  f.write(updated_content)
+                  
+              return True
+
+          def update_workflow_file(update):
+              """Update Python version in workflow file."""
+              file_path = update['file']
+              current_version = update['current_version']
+              latest_version = update['latest_version']
+              
+              with open(file_path, 'r') as f:
+                  content = f.read()
+                  
+              # Replace the version in the file
+              updated_content = re.sub(
+                  r'(python-version:\s*[\'"])' + re.escape(current_version) + r'([\'"])',
+                  r'\g<1>' + latest_version + r'\g<2>',
+                  content
+              )
+              
+              with open(file_path, 'w') as f:
+                  f.write(updated_content)
+                  
+              return True
+
+          # Load updates from file
+          try:
+              with open('python_updates.json', 'r') as f:
+                  all_updates = json.load(f)
+          except FileNotFoundError:
+              print("No updates file found.")
+              exit(1)
+
+          # Apply updates
+          updated_files = []
+          for update in all_updates:
+              file_path = update['file']
+              
+              if file_path == 'Pipfile':
+                  if update_pipfile(update):
+                      updated_files.append(file_path)
+                      
+                      # Update Pipfile.lock
+                      try:
+                          subprocess.run(['pipenv', 'lock'], check=True)
+                          updated_files.append('Pipfile.lock')
+                      except subprocess.CalledProcessError as e:
+                          print(f"Error updating Pipfile.lock: {e}")
+              else:
+                  if update_workflow_file(update):
+                      updated_files.append(file_path)
+
+          # Commit and push changes
+          if updated_files:
+              # Add files to git
+              for file in updated_files:
+                  subprocess.run(['git', 'add', file])
+                  
+              # Commit changes
+              commit_message = "Update Python runtime versions\n\n"
+              for update in all_updates:
+                  commit_message += f"- Updated Python version in {update['file']} from {update['current_version']} to {update['latest_version']}\n"
+              
+              subprocess.run(['git', 'commit', '-m', commit_message])
+              
+              # Push changes
+              subprocess.run(['git', 'push', 'origin', os.environ.get('BRANCH_NAME')])
+              
+              print(f"Updated {len(updated_files)} files and pushed changes to {os.environ.get('BRANCH_NAME')}")
+          else:
+              print("No files were updated.")
+          EOF
+
+          # Export branch name for the script
+          export BRANCH_NAME=$BRANCH_NAME
+          
+          # Run the update script
+          python update_python_versions.py
+          
+          # Create PR using GitHub CLI
+          cat > create_pr.py << 'EOF'
+          import os
+          import subprocess
+
+          def create_pr():
+              """Create a PR using GitHub CLI."""
+              branch_name = os.environ.get("BRANCH_NAME")
+              
+              # Create PR content
+              pr_title = "Update Python runtime versions"
+              pr_body = """
+          This PR updates Python runtime versions in Pipfile and GitHub Actions workflow files.
+
+          Updates were automatically detected and applied by the GitHub Actions workflow.
+
+          Link to Devin run: https://app.devin.ai/sessions/3105913418134a13abf8bc28e7c1714b
+          Requested by: Mitsukuni Sato (key@kenos.jp)
+          """
+              
+              # Get repository info
+              repo_url = subprocess.check_output(["git", "config", "--get", "remote.origin.url"]).decode().strip()
+              repo_name = repo_url.split("/")[-1].replace(".git", "")
+              org_name = repo_url.split("/")[-2].split(":")[-1]
+              full_repo = f"{org_name}/{repo_name}"
+              
+              # Use GitHub CLI to create PR
+              try:
+                  subprocess.run([
+                      "gh", "pr", "create",
+                      "--title", pr_title,
+                      "--body", pr_body,
+                      "--repo", full_repo,
+                      "--base", "master",
+                      "--head", branch_name
+                  ], check=True)
+                  
+                  print(f"Successfully created PR for {branch_name}")
+                  return True
+              except subprocess.CalledProcessError as e:
+                  print(f"Error creating PR: {e}")
+                  return False
+
+          # Create PR
+          create_pr()
+          EOF
+
+          python create_pr.py
+
+      - name: Run tests
+        if: steps.check-updates.outputs.updates_needed == 'true'
+        run: |
+          # Install dependencies
+          sudo apt-get update
+          sudo apt-get install --fix-missing -y libev-dev direnv
+          python -m pip install --upgrade pip
+          pip install pipenv
+          pipenv install -d
+          
+          # Set up project for testing
+          mkdir -p dist
+          pipenv run django-admin startproject \
+            --template=. \
+            --name=env.example \
+            --extension=py,md \
+            django_project_template dist
+          cd dist
+          mv env.example env
+          pipenv install -d
+          
+          # Run tests
+          cd dist
+          pipenv run python manage.py test --configuration=Test -v 2
