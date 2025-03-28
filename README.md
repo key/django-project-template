@@ -1,39 +1,39 @@
-# Django 4.2+ Project Template
+# Django 4.2+ プロジェクトテンプレート
 
-This is a simple Django 4.2+ project template with a modern setup. Most Django project templates make too many assumptions or are overly complicated. This template makes minimal assumptions while providing a useful foundation for new projects.
+これはモダンな設定を備えたシンプルな Django 4.2+ プロジェクトテンプレートです。多くの Django プロジェクトテンプレートは過度に多くの前提を置いていたり、複雑すぎたりします。このテンプレートは最小限の前提で、新しいプロジェクトのための有用な基盤を提供します。
 
-## Features
+## 特徴
 
-- Django 4.2+ with Python 3.12 support
-- Uses [Pipenv](https://github.com/pypa/pipenv) for dependency management
-- REST API support with [Django REST Framework](https://www.django-rest-framework.org/)
-- Development tools:
-  - [django-debug-toolbar](https://django-debug-toolbar.readthedocs.org) for debugging and performance insights
-  - [django-extensions](http://django-extensions.readthedocs.org) for useful development commands
-  - [pre-commit](https://pre-commit.com/) hooks for code quality
-- Docker Compose setup for PostgreSQL and Redis
-- GitHub Actions workflow for CI/CD
-- HTTPS and security settings for staging and production
-- PostgreSQL database support with psycopg2-binary
-- Redis cache integration with django-redis
-- Sentry integration for error tracking
-- Bjoern WSGI server for high-performance request handling
-- WhiteNoise for static file serving
+- Django 4.2+ と Python 3.12 のサポート
+- 依存関係管理に [Pipenv](https://github.com/pypa/pipenv) を使用
+- [Django REST Framework](https://www.django-rest-framework.org/) による REST API サポート
+- 開発ツール:
+  - [django-debug-toolbar](https://django-debug-toolbar.readthedocs.org) によるデバッグとパフォーマンス分析
+  - [django-extensions](http://django-extensions.readthedocs.org) による便利な開発コマンド
+  - コード品質のための [pre-commit](https://pre-commit.com/) フック
+- PostgreSQL と Redis のための Docker Compose 設定
+- CI/CD のための GitHub Actions ワークフロー
+- ステージングと本番環境のための HTTPS とセキュリティ設定
+- psycopg2-binary による PostgreSQL データベースサポート
+- django-redis による Redis キャッシュ統合
+- エラー追跡のための Sentry 統合
+- 高性能リクエスト処理のための Bjoern WSGI サーバー
+- 静的ファイル配信のための WhiteNoise
 
-## How to install
+## インストール方法
 
-### Prerequisites
+### 前提条件
 
-Install system requirements:
+システム要件をインストールします:
 
 ```bash
-brew bundle  # On macOS
-# For Ubuntu/Debian: sudo apt-get install -y libev-dev direnv
+brew bundle  # macOS の場合
+# Ubuntu/Debian の場合: sudo apt-get install -y libev-dev direnv
 ```
 
-### Create a new project
+### 新しいプロジェクトの作成
 
-Create a Django project from this template:
+このテンプレートから Django プロジェクトを作成します:
 
 ```bash
 django-admin startproject \
@@ -43,53 +43,53 @@ django-admin startproject \
   project_name
 ```
 
-### Setup environment
+### 環境設定
 
-Create `.env` from `env.example` and allow direnv:
+`env.example` から `.env` を作成し、direnv を許可します:
 
 ```bash
 mv env.example .env
 direnv allow .
 ```
 
-### Install dependencies
+### 依存関係のインストール
 
-Install Python modules:
+Python モジュールをインストールします:
 
 ```bash
-# For macOS with Homebrew
+# macOS と Homebrew の場合
 C_INCLUDE_PATH=/usr/local/include LD_LIBRARY_PATH=/usr/local/lib pipenv install --dev
 
-# For Ubuntu/Debian
+# Ubuntu/Debian の場合
 pipenv install --dev
 ```
 
-### Start development services
+### 開発サービスの起動
 
-Start PostgreSQL and Redis using Docker:
+Docker を使用して PostgreSQL と Redis を起動します:
 
 ```bash
 docker compose up -d
 ```
 
-## Environment variables
+## 環境変数
 
-This template uses [django-configurations](https://django-configurations.readthedocs.io/) for class-based settings. The `DJANGO_CONFIGURATION` environment variable determines which settings class to use.
+このテンプレートはクラスベースの設定のために [django-configurations](https://django-configurations.readthedocs.io/) を使用しています。`DJANGO_CONFIGURATION` 環境変数によって使用する設定クラスが決まります。
 
-### Common environment variables
+### 共通環境変数
 
-These variables are used in all environments:
+これらの変数はすべての環境で使用されます:
 
 ```
-DJANGO_CONFIGURATION=Dev  # Options: Dev, Test, Prod
+DJANGO_CONFIGURATION=Dev  # オプション: Dev, Test, Prod
 DJANGO_SECRET_KEY='your-secret-key'
 DATABASE_URL='postgresql://postgres:password@localhost:15432/project_name'
 CACHE_URL='redis://localhost:16379/1'
 ```
 
-### Production environment variables
+### 本番環境変数
 
-These settings are used in staging and production environments:
+これらの設定はステージングと本番環境で使用されます:
 
 ```
 DJANGO_SESSION_COOKIE_SECURE='yes'
@@ -101,36 +101,36 @@ DJANGO_SECURE_REDIRECT_EXEMPT=''
 DJANGO_SECURE_SSL_HOST=''
 DJANGO_SECURE_SSL_REDIRECT='yes'
 DJANGO_SECURE_PROXY_SSL_HEADER='HTTP_X_FORWARDED_PROTO,https'
-SENTRY_DSN='your-sentry-dsn'  # For error tracking
+SENTRY_DSN='your-sentry-dsn'  # エラー追跡用
 ```
 
-## Development
+## 開発
 
-### Running the server
+### サーバーの実行
 
-Start the Django development server:
+Django 開発サーバーを起動します:
 
 ```bash
 python manage.py runserver
 ```
 
-### Running tests
+### テストの実行
 
-Run tests with:
+テストを実行します:
 
 ```bash
 python manage.py test --configuration=Test
 ```
 
-## Deployment
+## デプロイメント
 
-This template can be deployed to various platforms:
+このテンプレートは様々なプラットフォームにデプロイできます:
 
-1. **Self-hosted server**: Use the built-in Bjoern WSGI server for high performance
-2. **Docker**: The template is Docker-ready with the included compose.yaml
-3. **Cloud platforms**: Compatible with most cloud platforms that support Django
+1. **自己ホスト型サーバー**: 高性能のための内蔵 Bjoern WSGI サーバーを使用
+2. **Docker**: 同梱の compose.yaml で Docker 対応済み
+3. **クラウドプラットフォーム**: Django をサポートするほとんどのクラウドプラットフォームと互換性あり
 
-## License
+## ライセンス
 
 The MIT License (MIT)
 
