@@ -1,58 +1,95 @@
-# Django 5.0+ project template
+# Django 4.2+ プロジェクトテンプレート
 
-This is a simple Django 5.0+ project template with my preferred setup. Most Django project templates make way too many assumptions or are just way too complicated. I try to make the least amount of assumptions possible while still trying provide a useful setup.
+これはモダンな設定を備えたシンプルな Django 4.2+ プロジェクトテンプレートです。多くの Django プロジェクトテンプレートは過度に多くの前提を置いていたり、複雑すぎたりします。このテンプレートは最小限の前提で、新しいプロジェクトのための有用な基盤を提供します。
 
-## Features
+## 特徴
 
-- Django 5.0+
-- Uses [Pipenv](https://github.com/kennethreitz/pipenv) - the officially recommended Python packaging tool from Python.org.
-- Get value insight and debug information while on Development with [django-debug-toolbar](https://django-debug-toolbar.readthedocs.org).
-- Collection of custom extensions with [django-extensions](http://django-extensions.readthedocs.org).
-- HTTPS and other security related settings on Staging and Production.
-- PostgreSQL database support with psycopg2.
+- Django 4.2+ と Python 3.12 のサポート
+- 依存関係管理に [Pipenv](https://github.com/pypa/pipenv) を使用
+- [Django REST Framework](https://www.django-rest-framework.org/) による REST API サポート
+- 開発ツール:
+  - [django-debug-toolbar](https://django-debug-toolbar.readthedocs.org) によるデバッグとパフォーマンス分析
+  - [django-extensions](http://django-extensions.readthedocs.org) による便利な開発コマンド
+  - コード品質のための [pre-commit](https://pre-commit.com/) フック
+- PostgreSQL と Redis のための Docker Compose 設定
+- CI/CD のための GitHub Actions ワークフロー
+- ステージングと本番環境のための HTTPS とセキュリティ設定
+- psycopg2-binary による PostgreSQL データベースサポート
+- django-redis による Redis キャッシュ統合
+- エラー追跡のための Sentry 統合
+- 高性能リクエスト処理のための Bjoern WSGI サーバー
+- 静的ファイル配信のための WhiteNoise
 
-## How to install
+## インストール方法
 
-Install requirements.
+### 前提条件
+
+システム要件をインストールします:
 
 ```bash
-brew bundle
+brew bundle  # macOS の場合
+# Ubuntu/Debian の場合: sudo apt-get install -y libev-dev direnv
 ```
 
-Create django project from template.
+### 新しいプロジェクトの作成
+
+このテンプレートから Django プロジェクトを作成します:
 
 ```bash
-django-admin.py startproject \
+django-admin startproject \
   --template=https://github.com/key/django-project-template/archive/master.zip \
   --name=env.example \
   --extension=py,md,yml \
   project_name
 ```
 
-Create `env` from `env.example`, and allow direnv.
+### 環境設定
+
+`env.example` から `.env` を作成し、direnv を許可します:
 
 ```bash
-mv env.example env
+mv env.example .env
 direnv allow .
 ```
 
-Install python modules.
+### 依存関係のインストール
+
+Python モジュールをインストールします:
 
 ```bash
-C_INCLUDE_PATH=/usr/local/include LD_LIBARY_PATH=/usr/local/lib pipenv install --dev
+# macOS と Homebrew の場合
+C_INCLUDE_PATH=/usr/local/include LD_LIBRARY_PATH=/usr/local/lib pipenv install --dev
+
+# Ubuntu/Debian の場合
+pipenv install --dev
 ```
 
-## Environment variables
+### 開発サービスの起動
 
-These are common between environments. The `ENVIRONMENT` variable loads the correct settings, possible values are: `DEVELOPMENT`, `STAGING`, `PRODUCTION`.
+Docker を使用して PostgreSQL と Redis を起動します:
 
-```
-ENVIRONMENT='DEVELOPMENT'
-DJANGO_SECRET_KEY='dont-tell-eve'
-DJANGO_DEBUG='yes'
+```bash
+docker compose up -d
 ```
 
-These settings(and their default values) are only used on staging and production environments.
+## 環境変数
+
+このテンプレートはクラスベースの設定のために [django-configurations](https://django-configurations.readthedocs.io/) を使用しています。`DJANGO_CONFIGURATION` 環境変数によって使用する設定クラスが決まります。
+
+### 共通環境変数
+
+これらの変数はすべての環境で使用されます:
+
+```
+DJANGO_CONFIGURATION=Dev  # オプション: Dev, Test, Prod
+DJANGO_SECRET_KEY='your-secret-key'
+DATABASE_URL='postgresql://postgres:password@localhost:15432/project_name'
+CACHE_URL='redis://localhost:16379/1'
+```
+
+### 本番環境変数
+
+これらの設定はステージングと本番環境で使用されます:
 
 ```
 DJANGO_SESSION_COOKIE_SECURE='yes'
@@ -64,17 +101,40 @@ DJANGO_SECURE_REDIRECT_EXEMPT=''
 DJANGO_SECURE_SSL_HOST=''
 DJANGO_SECURE_SSL_REDIRECT='yes'
 DJANGO_SECURE_PROXY_SSL_HEADER='HTTP_X_FORWARDED_PROTO,https'
+SENTRY_DSN='your-sentry-dsn'  # エラー追跡用
 ```
 
-## Deployment
+## 開発
 
-It is possible to deploy to Heroku or to your own server.
+### サーバーの実行
 
-## License
+Django 開発サーバーを起動します:
+
+```bash
+python manage.py runserver
+```
+
+### テストの実行
+
+テストを実行します:
+
+```bash
+python manage.py test --configuration=Test
+```
+
+## デプロイメント
+
+このテンプレートは様々なプラットフォームにデプロイできます:
+
+1. **自己ホスト型サーバー**: 高性能のための内蔵 Bjoern WSGI サーバーを使用
+2. **Docker**: 同梱の compose.yaml で Docker 対応済み
+3. **クラウドプラットフォーム**: Django をサポートするほとんどのクラウドプラットフォームと互換性あり
+
+## ライセンス
 
 The MIT License (MIT)
 
-Copyright (c) 2012-2017 José Padilla
+Copyright (c) 2012-2025 José Padilla, Mitsukuni Sato
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
