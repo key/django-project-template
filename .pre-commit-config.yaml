@@ -1,9 +1,9 @@
 default_language_version:
   python: python3
-  node: "14.13.0"
+  node: "20.11.1"
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.3.0
+    rev: v4.5.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -16,12 +16,12 @@ repos:
         args: ["--fix=lf"]
 
   - repo: https://github.com/asottile/add-trailing-comma
-    rev: v2.0.1
+    rev: v2.5.0
     hooks:
       - id: add-trailing-comma
 
   - repo: git@github.com:humitos/mirrors-autoflake.git
-    rev: v1.1
+    rev: v1.3
     hooks:
       - id: autoflake
         args:
@@ -32,13 +32,13 @@ repos:
           ]
 
   - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.6.4
+    rev: v5.13.2
     hooks:
       - id: isort
         args: ["--apply"]
 
   - repo: https://github.com/prettier/prettier
-    rev: 2.1.2
+    rev: 3.1.0
     hooks:
       - id: prettier
         exclude: "templates|.aws"

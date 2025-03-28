@@ -1,6 +1,6 @@
 """
 For the full list of settings and their values,
-see https://docs.djangoproject.com/en/3.0/ref/settings/
+see https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from typing import Optional
@@ -73,7 +73,6 @@ class Common(Configuration):
     WSGI_APPLICATION = '{{ project_name }}.wsgi.application'
 
     # Password validation
-    # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
     AUTH_PASSWORD_VALIDATORS = [
         {
             'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -90,7 +89,6 @@ class Common(Configuration):
     ]
 
     # Internationalization
-    # https://docs.djangoproject.com/en/3.0/topics/i18n/
     LANGUAGE_CODE = 'en-us'
 
     TIME_ZONE = 'UTC'
