@@ -1,0 +1,120 @@
+name: Devin Code Review
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+  workflow_dispatch:
+
+jobs:
+  code-review:
+    runs-on: ubuntu-latest
+    env:
+      DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Install jq
+        run: |
+          if ! command -v jq &>/dev/null; then
+            sudo apt-get update && sudo apt-get install -y jq
+          fi
+
+      - name: Devin review combined
+        run: |
+          session_comment=$(gh pr view "${{ github.event.number }}" --json comments --jq '.comments[] | select(.body | contains("Devin Session ID:")) | .body' | head -n 1)
+
+          create_session() {
+            local prompt="$1"
+
+            local response
+            # JSONエスケープ処理
+            escaped_prompt=$(echo "$prompt" | jq -Rs .)
+            response=$(curl -s -w "\n%{http_code}" -X POST "https://api.devin.ai/v1/sessions" \
+                        -H "Authorization: Bearer $DEVIN_API_KEY" \
+                        -H "Content-Type: application/json" \
+                        -d "{\"prompt\": $escaped_prompt}")
+
+            local http_status
+            http_status=$(echo "$response" | tail -n 1)
+            echo "Request info: status code = $http_status"
+
+            if [ "$http_status" -ne 200 ]; then
+              exit 1
+            fi
+
+            local http_body
+            http_body=$(echo "$response" | sed '$d')
+
+            local session_id
+            session_id=$(echo "$http_body" | jq -r '.session_id')
+            if [ -z "$session_id" ] || [ "$session_id" = "null" ]; then
+              echo "Failed to get session ID, body = $http_body"
+              exit 1
+            fi
+            gh pr comment "${{ github.event.number }}" --body "Devin Session ID: $session_id"
+          }
+
+          update_session() {
+            local session_id="$1"
+            local message="$2"
+            local response
+            # JSONエスケープ処理
+            escaped_message=$(echo "$message" | jq -Rs .)
+            response=$(curl -s -w "\n%{http_code}" -X POST "https://api.devin.ai/v1/session/${session_id}/message" \
+                      -H "Authorization: Bearer $DEVIN_API_KEY" \
+                      -H "Content-Type: application/json" \
+                      -d "{\"message\": $escaped_message}")
+
+            local http_status
+            http_status=$(echo "$response" | tail -n 1)
+            echo "Request info: status code = $http_status"
+
+            if [ "$http_status" -ne 200 ]; then
+              exit 1
+            fi
+          }
+
+          # 指示内容をマークダウンファイルから読み込む
+          instructions=$(cat .github/devin_review_instructions.md | jq -Rs .)
+
+          if [ "${{ github.run_attempt }}" -gt 1 ]; then
+            # 手動での再試行
+            base_prompt="${{ github.event.number }}をもう一度、0からレビューしてください。"
+            additional="レビュー範囲については、すべての差分を対象にしてください。"
+            prompt="$base_prompt $instructions $additional"
+
+            if [ -z "$session_comment" ]; then
+              create_session "$prompt"
+            else
+              session_id=$(echo "$session_comment" | sed -E 's/.*Devin Session ID: (devin-[a-zA-Z0-9]+).*/\1/')
+              update_session "$session_id" "$prompt"
+            fi
+
+          elif [ "${{ github.event.action }}" = "synchronize" ] && [ "${{ github.run_attempt }}" -eq 1 ]; then
+            # 新規コミットなどが入った場合の自動レビュー
+            if [ -z "$session_comment" ]; then
+              exit 0
+            fi
+            session_id=$(echo "$session_comment" | sed -E 's/.*Devin Session ID: (devin-[a-zA-Z0-9]+).*/\1/')
+            base_prompt="${{ github.event.pull_request.html_url }} に変化がありました。再度レビューしてください。"
+            additional="レビュー範囲については、基本あなたが前回見たCommitから、最新のCommitまでの範囲で十分です。ただし gh pr diff ${{ github.event.number }} などを使い、PRで変更のあったファイルに限定しレビューしてください。（ただ単にmasterをPRにマージした = ブランチを最新化しただけである場合は、merge commitの差分をレビューしないようにしてください。）"
+            prompt="$base_prompt $instructions $additional"
+            update_session "$session_id" "$prompt"
+
+          else
+            if [ -z "$session_comment" ]; then
+              base_prompt="${{ github.event.pull_request.html_url }} をレビューしてください。"
+              additional=""
+              prompt="$base_prompt $instructions $additional"
+              create_session "$prompt"
+            else
+              exit 0
+            fi
+          fi
