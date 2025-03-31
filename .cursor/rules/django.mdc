@@ -9,12 +9,13 @@ This guide outlines best practices for developing Django applications to ensure 
 ## 1. Code Organization and Structure
 
 - **Directory Structure:**
-    - **Project Root:** Manage.py, settings, urls, wsgi.
-    - **Apps:** Each app should reside in its own directory.
+    - **Project Root:** manage.py, `project_name` directory
+    - **Settings:** settings.py, urls.py, wsgi.py in `project_name` directory
+    - **Apps:** Organize application in `apps/core/` directory (single app strategy)
     - **Static Files:** Separate directory for static files (CSS, JavaScript, images).
     - **Templates:** Dedicated directory for HTML templates.
     - **Media:** For user-uploaded files.
-    - **Tests:** Tests for each app in a separate tests/ directory.
+    - **Tests:** Tests for the app are kept in the `apps/core/tests/` directory of the app directory.
 
 - **File Naming Conventions:**
     - Use lowercase letters with underscores (snake_case) for Python files and variables (e.g., `models.py`, `user_profile`).
@@ -124,6 +125,8 @@ This guide outlines best practices for developing Django applications to ensure 
 - **Unit Testing:**
     - Write unit tests for individual functions and classes.
     - Use Django's testing framework to write and run tests.
+    - Prioritize testing in core business logic.
+    - Include boundary value tests and edge cases.
     - Mock external dependencies to isolate units of code.
 
 - **Integration Testing:**
@@ -142,6 +145,11 @@ This guide outlines best practices for developing Django applications to ensure 
 - **Mocking and Stubbing:**
     - Use mocking and stubbing to isolate units of code during testing.
     - Avoid mocking external dependencies unless necessary.
+
+- **Test Coverage:**
+    - Aim for high test coverage to ensure that critical code paths are tested.
+    - Use tools like coverage.py to measure test coverage.
+    - Monitor test coverage over time and address any gaps.
 
 ## 6. Common Pitfalls and Gotchas
 
@@ -172,17 +180,19 @@ This guide outlines best practices for developing Django applications to ensure 
 ## 7. Tooling and Environment
 
 - **Recommended Development Tools:**
-    - **IDE:** PyCharm, VS Code, Sublime Text
-    - **Package Manager:** pip, uv
+    - **IDE:** PyCharm, VS Code
+    - **AI Code Completion:** GitHub Copilot
+    - **AI Coding Assistant:** Devin, Cline
+    - **Package Manager:** pipenv
     - **Database Client:** pgAdmin, MySQL Workbench
 
 - **Build Configuration:**
-    - Use a `requirements.txt` file to manage dependencies.
+    - Use a `Pipfile` file to manage dependencies.
     - Use a virtual environment to isolate project dependencies.
 
 - **Linting and Formatting:**
-    - Use Black to format code automatically.
-    - Use flake8 to lint code and identify potential errors.
+    - Use ruff to format code automatically.
+    - Use ruff to lint code and identify potential errors.
 
 - **Deployment Best Practices:**
     - Use a production-ready web server (e.g., Gunicorn, uWSGI).
@@ -191,7 +201,7 @@ This guide outlines best practices for developing Django applications to ensure 
 
 - **CI/CD Integration:**
     - Integrate your project with a CI/CD pipeline to automate testing and deployment.
-    - Use tools like Jenkins, Travis CI, or GitLab CI.
+    - Use tools like GitHub Actions, AWS CodePipeline.
 
 ## Additional Notes
 
