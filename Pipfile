@@ -16,7 +16,7 @@ django-debug-toolbar = "*"
 
 [packages]
 bjoern = "*"
-django = "==5.1.7"
+django = "==5.1.8"
 django-redis = "*"
 django-configurations = {extras = ["database","cache"],version = "*"}
 django-extensions = "*"
