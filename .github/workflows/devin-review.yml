@@ -10,6 +10,7 @@ on:
 
 jobs:
   code-review:
+    if: ${{ !endswith(github.actor, '[bot]') }}
     runs-on: ubuntu-latest
     env:
       DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
