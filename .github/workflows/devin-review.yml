@@ -12,6 +12,9 @@ jobs:
   code-review:
     if: ${{ !endswith(github.actor, '[bot]') }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
